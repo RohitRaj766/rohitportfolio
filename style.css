@@ -540,9 +540,16 @@ noscript {
 
 .dp::after,
 .dp::before {
-    height: 300px;
+    height: 380px;
+    /* border: 2px solid red; */
     z-index: -2;
-    content: ""
+    content: "";
+    margin-top:-35px ;
+}
+
+.dp img{
+   
+    margin-top: -40px;
 }
 
 .main {
