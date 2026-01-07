@@ -75,19 +75,24 @@ const initCustomCursor = () => {
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
-    
-    cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
   });
   
-  // Smooth follower animation
+  // Smooth follower animation - large circle follows cursor
   const animateFollower = () => {
     const distX = mouseX - followerX;
     const distY = mouseY - followerY;
     
+    // Smooth easing for large circle
     followerX += distX * 0.1;
     followerY += distY * 0.1;
     
-    cursorFollower.style.transform = `translate(${followerX}px, ${followerY}px)`;
+    // Large circle follows cursor with smooth animation - centered on cursor position
+    cursorFollower.style.left = `${followerX}px`;
+    cursorFollower.style.top = `${followerY}px`;
+    
+    // Small circle stays centered inside the large circle (same position)
+    cursor.style.left = `${followerX}px`;
+    cursor.style.top = `${followerY}px`;
     
     requestAnimationFrame(animateFollower);
   };
@@ -95,16 +100,28 @@ const initCustomCursor = () => {
   animateFollower();
   
   // Add hover effect on interactive elements
-  const hoverElements = document.querySelectorAll('a, button, .skill-card, .project-card');
+  const hoverElements = document.querySelectorAll('a, button, .skill-card, .project-card, .exp-item, .exp-card, .project-link, .btn');
   
   hoverElements.forEach(el => {
     el.addEventListener('mouseenter', () => {
       cursorFollower.classList.add('hover');
+      cursor.classList.add('hover');
     });
     
     el.addEventListener('mouseleave', () => {
       cursorFollower.classList.remove('hover');
+      cursor.classList.remove('hover');
     });
+  });
+  
+  // Click effect
+  document.addEventListener('click', () => {
+    cursorFollower.classList.add('click');
+    cursor.classList.add('click');
+    setTimeout(() => {
+      cursorFollower.classList.remove('click');
+      cursor.classList.remove('click');
+    }, 200);
   });
 };
 
@@ -117,19 +134,42 @@ const initNavbar = () => {
   const navMenu = document.getElementById('nav-menu');
   const navLinks = document.querySelectorAll('.nav-link');
   
-  // Scroll effect
+  // Scroll effect (hide on scroll down, show on scroll up)
   let lastScroll = 0;
+  const scrollDelta = 8;
   
   window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    
+    if (!navbar) return;
+
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+
+    // Add compact style after some scroll
     if (currentScroll > 100) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');
     }
-    
-    lastScroll = currentScroll;
+
+    // Always show at the very top
+    if (currentScroll <= 0) {
+      navbar.classList.remove('hidden');
+      lastScroll = 0;
+      return;
+    }
+
+    // Only react after a small scroll delta to avoid jitter
+    if (Math.abs(currentScroll - lastScroll) > scrollDelta) {
+      const scrollingDown = currentScroll > lastScroll;
+      const mobileMenuOpen = navMenu && navMenu.classList.contains('active');
+
+      if (scrollingDown && !mobileMenuOpen && currentScroll > 150) {
+        navbar.classList.add('hidden');
+      } else {
+        navbar.classList.remove('hidden');
+      }
+
+      lastScroll = currentScroll;
+    }
   });
   
   // Mobile menu toggle with animation
@@ -450,7 +490,7 @@ const initIntersectionObserver = () => {
   }, observerOptions);
   
   // Observe elements
-  const animateElements = document.querySelectorAll('.skill-card, .project-card');
+  const animateElements = document.querySelectorAll('.skill-card, .project-card, .exp-content');
   
   animateElements.forEach(el => {
     el.style.opacity = '0';
@@ -465,6 +505,7 @@ const initIntersectionObserver = () => {
 // ============================================
 const initCounterAnimation = () => {
   const counters = document.querySelectorAll('.stat-number');
+  const expSummaryNumbers = document.querySelectorAll('.exp-summary-number[data-count]');
   
   const animateCounter = (counter) => {
     const target = parseInt(counter.textContent.replace(/\D/g, ''));
@@ -496,6 +537,261 @@ const initCounterAnimation = () => {
   }, {threshold: 0.5});
   
   counters.forEach(counter => observer.observe(counter));
+
+  // Animate experience summary numbers
+  if (expSummaryNumbers.length) {
+    const expSection = document.querySelector('.experience');
+    const summaryObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        expSummaryNumbers.forEach(numEl => {
+          const target = parseInt(numEl.getAttribute('data-count'), 10) || 0;
+          let current = 0;
+          const duration = 1500;
+          const step = target / (duration / 16);
+
+          const update = () => {
+            current += step;
+            if (current < target) {
+              numEl.textContent = Math.floor(current) + '+';
+              requestAnimationFrame(update);
+            } else {
+              numEl.textContent = target + '+';
+            }
+          };
+
+          update();
+        });
+
+        summaryObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.4 });
+
+    if (expSection) summaryObserver.observe(expSection);
+  }
+};
+
+// ============================================
+// Experience Carousel
+// ============================================
+const initExperienceCarousel = () => {
+  const carouselWrapper = document.querySelector('.exp-carousel-wrapper');
+  
+  if (!carouselWrapper) return;
+  
+  const track = carouselWrapper.querySelector('.exp-carousel-track');
+  const items = Array.from(carouselWrapper.querySelectorAll('.exp-item.exp-card'));
+  const prevBtn = carouselWrapper.querySelector('.exp-arrow-prev');
+  const nextBtn = carouselWrapper.querySelector('.exp-arrow-next');
+  const dotsContainer = carouselWrapper.querySelector('.exp-dots');
+  
+  if (!track || !items.length) return;
+  
+  let currentIndex = 0;
+  let isTransitioning = false;
+  let autoPlayInterval = null;
+  let isPaused = false;
+  const autoPlayDelay = 3000; // 4 seconds
+  
+  // Create dots if they don't exist
+  let dots = [];
+  if (dotsContainer && dotsContainer.children.length === 0) {
+    dots = items.map((_, index) => {
+      const dot = document.createElement('button');
+      dot.className = 'exp-dot';
+      dot.type = 'button';
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-label', `Go to experience ${index + 1}`);
+      dot.setAttribute('aria-selected', 'false');
+      dot.addEventListener('click', () => goToSlide(index));
+      dotsContainer.appendChild(dot);
+      return dot;
+    });
+  } else {
+    dots = Array.from(dotsContainer.querySelectorAll('.exp-dot'));
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => goToSlide(index));
+    });
+  }
+  
+  const updateCarousel = () => {
+    if (!track) return;
+    
+    // Update track transform
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    
+    // Update active states
+    items.forEach((item, i) => {
+      if (i === currentIndex) {
+        item.classList.add('active');
+        item.setAttribute('aria-hidden', 'false');
+      } else {
+        item.classList.remove('active');
+        item.setAttribute('aria-hidden', 'true');
+      }
+    });
+    
+    // Update dots
+    dots.forEach((dot, i) => {
+      const isActive = i === currentIndex;
+      dot.classList.toggle('active', isActive);
+      dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+    });
+    
+    // Update arrow states (always enabled for looping)
+    if (prevBtn) {
+      prevBtn.disabled = false;
+      prevBtn.setAttribute('aria-disabled', 'false');
+    }
+    
+    if (nextBtn) {
+      nextBtn.disabled = false;
+      nextBtn.setAttribute('aria-disabled', 'false');
+    }
+  };
+  
+  const goToSlide = (index) => {
+    if (isTransitioning) return;
+    
+    const newIndex = Math.max(0, Math.min(index, items.length - 1));
+    
+    if (newIndex === currentIndex) return;
+    
+    isTransitioning = true;
+    currentIndex = newIndex;
+    updateCarousel();
+    
+    // Reset transition flag after animation
+    setTimeout(() => {
+      isTransitioning = false;
+    }, 500);
+  };
+  
+  const nextSlide = () => {
+    if (currentIndex < items.length - 1) {
+      goToSlide(currentIndex + 1);
+    } else {
+      // Loop back to first slide
+      goToSlide(0);
+    }
+  };
+  
+  const prevSlide = () => {
+    if (currentIndex > 0) {
+      goToSlide(currentIndex - 1);
+    } else {
+      // Loop to last slide
+      goToSlide(items.length - 1);
+    }
+  };
+  
+  // Auto-play functionality
+  const startAutoPlay = () => {
+    if (autoPlayInterval) return;
+    
+    autoPlayInterval = setInterval(() => {
+      if (!isPaused && !isTransitioning) {
+        nextSlide();
+      }
+    }, autoPlayDelay);
+  };
+  
+  const stopAutoPlay = () => {
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = null;
+    }
+  };
+  
+  const pauseAutoPlay = () => {
+    isPaused = true;
+  };
+  
+  const resumeAutoPlay = () => {
+    isPaused = false;
+  };
+  
+  // Event listeners
+  if (prevBtn) {
+    prevBtn.addEventListener('click', prevSlide);
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', nextSlide);
+  }
+  
+  // Keyboard navigation
+  carouselWrapper.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      prevSlide();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      nextSlide();
+    }
+  });
+  
+  // Touch/swipe support for mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+  
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  
+  track.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, { passive: true });
+  
+  const handleSwipe = () => {
+    const swipeThreshold = 50;
+    const diff = touchStartX - touchEndX;
+    
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        // Swipe left - next
+        nextSlide();
+      } else {
+        // Swipe right - previous
+        prevSlide();
+      }
+    }
+  };
+  
+  // Hover to pause/resume auto-play
+  carouselWrapper.addEventListener('mouseenter', () => {
+    pauseAutoPlay();
+  });
+  
+  carouselWrapper.addEventListener('mouseleave', () => {
+    resumeAutoPlay();
+  });
+  
+  // Pause on focus (accessibility)
+  carouselWrapper.addEventListener('focusin', () => {
+    pauseAutoPlay();
+  });
+  
+  carouselWrapper.addEventListener('focusout', () => {
+    resumeAutoPlay();
+  });
+  
+  // Initialize
+  updateCarousel();
+  
+  // Start auto-play
+  startAutoPlay();
+  
+  // Make carousel focusable for keyboard navigation
+  carouselWrapper.setAttribute('tabindex', '0');
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    stopAutoPlay();
+  });
 };
 
 // ============================================
@@ -635,6 +931,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTypingAnimation();
   initIntersectionObserver();
   initCounterAnimation();
+  initExperienceCarousel();
   initParallax();
   initTiltEffect();
   initMagneticButtons();
