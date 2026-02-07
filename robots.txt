@@ -1,4 +1,9 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /src/pdf/
 
-Sitemap: https://rohitportfolio007.vercel.app/sitemap.xml
+# Crawl-delay
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://rohitraj.dev/sitemap.xml
