@@ -1,0 +1,32 @@
+{
+  "name": "Rohit Raj - Full-Stack Software Developer",
+  "short_name": "Rohit Raj",
+  "description": "Portfolio website of Rohit Raj - Full-Stack Software Developer specializing in React, Next.js, Node.js, and TypeScript",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "src/png/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "src/png/rohitprof.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "src/png/rohitprof.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["portfolio", "developer", "technology"],
+  "lang": "en-US",
+  "dir": "ltr"
+}

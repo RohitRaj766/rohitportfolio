@@ -815,6 +815,9 @@ const initParallax = () => {
 // ============================================
 const initTiltEffect = () => {
   const cards = document.querySelectorAll('.skill-card, .project-card');
+  const profileImg = document.querySelector('.profile-img');
+  
+  console.log('Tilt effect initialized. Cards found:', cards.length);
   
   cards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
@@ -825,16 +828,44 @@ const initTiltEffect = () => {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       
-      const rotateX = (y - centerY) / 20;
-      const rotateY = (centerX - x) / 20;
+      const rotateX = (y - centerY) / 15;
+      const rotateY = (centerX - x) / 15;
       
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
     });
     
     card.addEventListener('mouseleave', () => {
       card.style.transform = '';
     });
   });
+  
+  // Profile image tilt effect
+  if (profileImg) {
+    console.log('Profile image found, adding tilt effect');
+    const imageWrapper = profileImg.closest('.image-wrapper');
+    
+    if (imageWrapper) {
+      imageWrapper.addEventListener('mousemove', (e) => {
+        const rect = imageWrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 12;
+        const rotateY = (centerX - x) / 12;
+        
+        profileImg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.08) translateY(-12px)`;
+      });
+      
+      imageWrapper.addEventListener('mouseleave', () => {
+        profileImg.style.transform = '';
+      });
+    }
+  } else {
+    console.log('Profile image not found');
+  }
 };
 
 // ============================================
