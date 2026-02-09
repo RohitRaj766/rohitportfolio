@@ -90,7 +90,7 @@
 ## 🔧 Implementation Steps
 
 ### Step 1: Update Domain
-Replace `https://rohitraj.dev` with your actual domain in:
+Replace `https://rohitportfolio007.vercel.app` with your actual domain in:
 - index.html (all meta tags)
 - robots.txt
 - sitemap.xml
