@@ -814,6 +814,12 @@ const initParallax = () => {
 // Add Hover Tilt Effect to Cards
 // ============================================
 const initTiltEffect = () => {
+  // Only enable tilt effects on desktop (1024px and above)
+  if (window.innerWidth <= 1024) {
+    console.log('Tilt effect disabled on mobile/tablet');
+    return;
+  }
+  
   const cards = document.querySelectorAll('.skill-card, .project-card');
   const profileImg = document.querySelector('.profile-img');
   
@@ -872,6 +878,12 @@ const initTiltEffect = () => {
 // Magnetic Button Effect
 // ============================================
 const initMagneticButtons = () => {
+  // Only enable magnetic effect on desktop (1024px and above)
+  if (window.innerWidth <= 1024) {
+    console.log('Magnetic button effect disabled on mobile/tablet');
+    return;
+  }
+  
   const buttons = document.querySelectorAll('.btn-primary');
   
   buttons.forEach(button => {
@@ -893,6 +905,12 @@ const initMagneticButtons = () => {
 // Add Ripple Effect to Buttons
 // ============================================
 const initRippleEffect = () => {
+  // Only enable ripple effect on desktop (1024px and above)
+  if (window.innerWidth <= 1024) {
+    console.log('Ripple effect disabled on mobile/tablet');
+    return;
+  }
+  
   const buttons = document.querySelectorAll('.btn');
   
   buttons.forEach(button => {
