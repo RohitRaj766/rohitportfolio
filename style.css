@@ -157,7 +157,7 @@ p, span, a, li, button {
 /* Modern CSS Scrollbar (Firefox and newer browsers) */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-primary) var(--color-bg-secondary);
+  scrollbar-color: var(--color-primary) transparent;
 }
 
 /* Webkit Scrollbar (Chrome, Safari, Edge, Opera) */
@@ -167,7 +167,7 @@ p, span, a, li, button {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -4306,7 +4306,7 @@ img, video, canvas, svg {
   }
   
   ::-webkit-scrollbar-track {
-    background: var(--color-bg-secondary) !important;
+    background: transparent !important;
   }
   
   ::-webkit-scrollbar-thumb {
