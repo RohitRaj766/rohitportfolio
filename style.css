@@ -153,9 +153,17 @@ p, span, a, li, button {
   color: var(--color-text-primary);
 }
 
-/* Scrollbar */
+/* Scrollbar - Works on Desktop and Mobile */
+/* Modern CSS Scrollbar (Firefox and newer browsers) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-bg-secondary);
+}
+
+/* Webkit Scrollbar (Chrome, Safari, Edge, Opera) */
 ::-webkit-scrollbar {
   width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -169,6 +177,17 @@ p, span, a, li, button {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, var(--color-primary-light), var(--color-secondary-light));
+}
+
+/* Force scrollbar to always show on mobile */
+html {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Headings */
@@ -1286,10 +1305,6 @@ body.light-theme .hamburger-line {
   100% {
     opacity: 1;
     transform: rotateY(0deg) rotateZ(0deg) scale(1);
-  }
-}
-
-.image-wrapper:hover .profile-img {Z(0deg) scale(1);
   }
 }
 
@@ -4282,5 +4297,31 @@ img, video, canvas, svg {
   .project-link,
   .nav-logo {
     transition: none !important;
+  }
+  
+  /* Ensure custom scrollbar is visible on mobile/tablet */
+  ::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary) !important;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primary), var(--color-secondary)) !important;
+    border-radius: var(--radius-full) !important;
+  }
+  
+  /* Force scrollbar visibility on mobile */
+  html {
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  body {
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 }
