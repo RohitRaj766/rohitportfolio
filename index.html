@@ -1110,6 +1110,47 @@
     </div>
   </footer>
 
+  <!-- Chatbot -->
+  <div class="chatbot-container" id="chatbot-container">
+    <div class="chatbot-window" id="chatbot-window">
+      <div class="chatbot-header">
+        <div class="chatbot-title">
+          <span class="chatbot-status"></span>
+          Charlie
+        </div>
+        <button class="chatbot-close" id="chatbot-close" aria-label="Close chat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="chatbot-messages" id="chatbot-messages">
+        <!-- Messages will be injected here -->
+      </div>
+      <div class="chatbot-suggestions-container">
+        <button class="chatbot-suggestion">Tech Stack</button>
+        <button class="chatbot-suggestion">Projects</button>
+        <button class="chatbot-suggestion">Experience</button>
+      </div>
+      <div class="chatbot-input-area">
+        <input type="text" id="chatbot-input" placeholder="Ask about Rohit..." autocomplete="off">
+        <button id="chatbot-send" aria-label="Send message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <button class="chatbot-toggle" id="chatbot-toggle" aria-label="Open chat">
+      <svg class="chat-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+        <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
   <!-- Back to Top -->
   <button class="back-to-top" id="back-to-top" aria-label="Back to top">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1131,5 +1172,6 @@
     });
   </script>
   <script src="main.js"></script>
+  <script src="chatbot.js"></script>
 </body>
 </html>
