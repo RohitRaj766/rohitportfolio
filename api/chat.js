@@ -11,7 +11,6 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.GROQ_API_KEY;
 
-  console.log("apiKey :: " ,apiKey)
 
   if (!apiKey) {
     // Fallback response if API key is not configured

@@ -396,29 +396,7 @@ const initParticles = () => {
   });
 };
 
-// ============================================
-// Back to Top Button
-// ============================================
-const initBackToTop = () => {
-  const backToTopBtn = document.getElementById('back-to-top');
-  
-  if (!backToTopBtn) return;
-  
-  window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 500) {
-      backToTopBtn.classList.add('show');
-    } else {
-      backToTopBtn.classList.remove('show');
-    }
-  });
-  
-  backToTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  });
-};
+
 
 // ============================================
 // Smooth Scroll
@@ -975,7 +953,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCustomCursor();
   initNavbar();
   initThemeToggle();
-  initBackToTop();
   initSmoothScroll();
   initTypingAnimation();
   initIntersectionObserver();
